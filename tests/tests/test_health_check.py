@@ -1,10 +1,18 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.test import TestCase, Client
-from django.urls import reverse
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    # For Django >= 2.0
+    from django.urls import reverse
+
+from django_yubin.views import MailHealthCheckView
 
 
-class TestHealthCheck(TestCase):
+class HealthCheck(TestCase):
 
-    def test_health_check_view(self):
+    def test_hc_view(self):
         c = Client()
         url = reverse('yubin_health')
         response = c.get(url)

@@ -1,8 +1,11 @@
-"""
-Class based views for composing emails.
-"""
+#!/usr/bin/env python
+# encoding: utf-8
+# ----------------------------------------------------------------------------
 
-import urllib.parse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -19,7 +22,7 @@ def template_from_string(template_string, using=None):
     return engine.from_string(template_string)
 
 
-class EmailMessageView:
+class EmailMessageView(object):
     """
     Base class for encapsulating the logic for the rendering and sending
     class-based email messages.
@@ -35,6 +38,23 @@ class EmailMessageView:
         if not hasattr(self, '_headers'):
             self._headers = {}
         return self._headers
+
+    def set_priority(self, priority):
+        """
+        sets the queue priority
+
+        :param priority
+        :type string
+            now-not-queued
+            now
+            high
+            normal
+            low
+        """
+        if not hasattr(self, '_headers'):
+            self._headers = {'X-Mail-Queue-Priority': priority}
+        else:
+            self._headers['X-Mail-Queue-Priority'] = priority
 
     def render_subject(self, context):
         raise NotImplementedError  # Must be implemented by subclasses.
@@ -240,14 +260,14 @@ class TemplatedHTMLEmailMessageView(TemplatedEmailMessageView):
 
     def get_context_data(self, **kwargs):
         """
-        As is quite common to have images in an HTML e-mail add MEDIA_URL
+        As is quite commont to have images in an HTML e-mail add MEDIA_URL
         and STATIC_URL to the context with its full path
         """
 
         domain = Site.objects.get_current().domain
         ctx = super(TemplatedHTMLEmailMessageView, self).get_context_data(**kwargs)
-        ctx['MEDIA_URL'] = urllib.parse.urljoin(domain, settings.MEDIA_URL)
-        ctx['STATIC_URL'] = urllib.parse.urljoin(domain, settings.STATIC_URL)
+        ctx['MEDIA_URL'] = urlparse.urljoin(domain, settings.MEDIA_URL)
+        ctx['STATIC_URL'] = urlparse.urljoin(domain, settings.STATIC_URL)
         return ctx
 
     def render_html_body(self, context):
@@ -468,7 +488,7 @@ class TemplatedMultipleAttachmentsEmailMessageView(TemplatedHTMLEmailMessageView
         return message
 
 
-class TemplateContextMixin:
+class TemplateContextMixin(object):
     subject_template = template_from_string('{% autoescape off %}{{ subject }}{% endautoescape %}')
     body_template = template_from_string('{% autoescape off %}{{ content }}{% endautoescape %}')
 

@@ -1,14 +1,10 @@
-import os
-import tempfile
+# encoding: utf-8
 
+import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ADMINS = [("Admin1", "admin1@example.com"), ("Admin2", "admin2@example.com")]
-MANAGERS = [("Manager1", "manager1@example.com"), ("Manager2", "manager2@example.com")]
-
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
+EMAIL_PORT = 1025
 ROOT_URLCONF = 'tests.urls'
 
 SECRET_KEY = 'yo secret yo'
@@ -52,11 +48,3 @@ TEMPLATES = [
         },
     },
 ]
-
-MEDIA_ROOT = tempfile.TemporaryDirectory().name
-
-EMAIL_PORT = 1025
-EMAIL_BACKEND = 'django_yubin.backends.QueuedEmailBackend'
-MAILER_USE_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-
-CELERY_ALWAYS_EAGER = True

@@ -1,7 +1,10 @@
+# encoding: utf-8
+from __future__ import absolute_import, unicode_literals
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from ...message_views import BasicHTMLEmailMessageView
+from ...messages import BasicHTMLEmailMessageView
 
 
 class Command(BaseCommand):
